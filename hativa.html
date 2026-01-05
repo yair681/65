@@ -185,7 +185,7 @@
             z-index: 1;
         }
 
-        .hero h2 {
+        .hero-subtitle {
             font-size: 1.8rem;
             color: var(--text-light);
             font-weight: 400;
@@ -193,18 +193,113 @@
             line-height: 1.6;
         }
 
+        /* רשת יתרונות */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, rgba(26, 77, 122, 0.05), rgba(42, 107, 168, 0.05));
+            padding: 2.5rem 2rem;
+            border-radius: var(--border-radius);
+            text-align: center;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent-color);
+            box-shadow: var(--shadow);
+        }
+
+        .feature-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .feature-card:nth-child(1) .feature-icon { animation-delay: 0s; }
+        .feature-card:nth-child(2) .feature-icon { animation-delay: 0.5s; }
+        .feature-card:nth-child(3) .feature-icon { animation-delay: 1s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 0.8rem;
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        /* סקשן אודות */
+        .about-section {
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.05), rgba(255, 140, 97, 0.05));
+            padding: 3rem;
+            border-radius: var(--border-radius);
+            margin: 3rem 0;
+            border-right: 6px solid var(--accent-color);
+        }
+
+        .about-section h3 {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .about-section p {
+            font-size: 1.15rem;
+            line-height: 1.9;
+            color: var(--text-color);
+            margin-bottom: 1.2rem;
+        }
+
+        /* סקשן CTA */
+        .cta-section {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border-radius: var(--border-radius);
+            margin-top: 3rem;
+            color: white;
+        }
+
+        .cta-section h3 {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .cta-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            margin-bottom: 2rem;
+        }
+
         .cta-button {
             display: inline-block;
             background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-light) 100%);
             color: white;
-            padding: 18px 45px;
+            padding: 20px 50px;
             text-decoration: none;
             border-radius: 50px;
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: 700;
-            margin-top: 2.5rem;
             transition: var(--transition);
-            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.4);
             position: relative;
             overflow: hidden;
         }
@@ -225,8 +320,8 @@
         }
 
         .cta-button:hover {
-            transform: translateY(-4px) scale(1.05);
-            box-shadow: 0 12px 35px rgba(255, 107, 53, 0.4);
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(255, 107, 53, 0.5);
         }
 
         /* כרטיסים מודרניים */
@@ -389,7 +484,7 @@
                 padding: 3rem 2rem;
             }
 
-            .hero h2 {
+            .hero-subtitle {
                 font-size: 1.4rem;
             }
 
@@ -415,9 +510,26 @@
                 gap: 1.5rem;
             }
 
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
             .cta-button {
                 font-size: 1.1rem;
                 padding: 15px 35px;
+            }
+
+            .about-section {
+                padding: 2rem 1.5rem;
+            }
+
+            .cta-section h3 {
+                font-size: 1.8rem;
+            }
+
+            .feature-icon {
+                font-size: 3rem;
             }
         }
 
@@ -477,10 +589,39 @@
         <div id="home" class="page active">
             <div class="hero">
                 <h1>ישיבת פרחי אהרון</h1>
-                <h2>רוצים להיות בני תורה? רוצים ללמוד לעומק?<br>מקומכם איתנו!</h2>
-                <a href="https://68fdda4e0b7f0.site123.me/" target="_blank" class="cta-button">
-                    למעבר לאתר הראשי ←
-                </a>
+                <p class="hero-subtitle">רוצים להיות בני תורה? רוצים ללמוד לעומק?<br>מקומכם איתנו!</p>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">📚</div>
+                        <h3>לימוד מעמיק</h3>
+                        <p>שיעורים איכותיים עם מורים מנוסים ומסורים לצמיחתך הרוחנית</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🎯</div>
+                        <h3>אווירה חמה</h3>
+                        <p>סביבה תומכת ומעודדת שמאפשרת לך להתפתח ולצמוח</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">👥</div>
+                        <h3>חברים לדרך</h3>
+                        <p>קהילה של בני נוער שואפים ומתקדמים יחד לקראת המטרה</p>
+                    </div>
+                </div>
+
+                <div class="about-section">
+                    <h3>אודות הישיבה</h3>
+                    <p>ישיבת פרחי אהרון היא מוסד תורני ייחודי המשלב לימוד עמוק של הגמרא והלכה, עם דגש על בניית אישיות תורנית שלמה. הישיבה ידועה באווירה החמה והמשפחתית, בצוות המורים המצוין, ובתוכנית הלימודים המותאמת אישית לכל תלמיד.</p>
+                    <p>אנחנו מאמינים שכל תלמיד יכול להצליח ולצמוח, ומספקים לו את הכלים והליווי האישי להגשמת הפוטנציאל שלו. היישיבה מציעה מסגרת אידיאלית לבני נוער המבקשים להעמיק בלימוד התורה, לפתח מיומנויות לימוד עצמאיות, ולהיות חלק מקהילה מלאת חיים ותמיכה הדדית.</p>
+                </div>
+
+                <div class="cta-section">
+                    <h3>מעוניינים להצטרף?</h3>
+                    <p class="cta-subtitle">למידע נוסף, תמונות, סרטונים ופרטי יצירת קשר</p>
+                    <a href="https://68fdda4e0b7f0.site123.me/" target="_blank" class="cta-button">
+                        לחצו כאן
+                    </a>
+                </div>
             </div>
         </div>
 
@@ -544,14 +685,18 @@
                 return;
             }
 
-            Papa.parse(url, {
+            // שימוש ב-CORS proxy כדי לעקוף את בעיית ה-CORS
+            const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+
+            Papa.parse(proxyUrl, {
                 download: true,
                 header: true,
                 complete: function(results) {
                     renderData(type, results.data);
                 },
                 error: function(err) {
-                    container.innerHTML = '<div class="empty-state">שגיאה בטעינת הנתונים. ודא שהקובץ מפורסם.</div>';
+                    console.error('Error loading data:', err);
+                    container.innerHTML = '<div class="empty-state">שגיאה בטעינת הנתונים. נסה לרענן את הדף.</div>';
                 }
             });
         }
