@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ישיבת פרחי אהרון</title>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-color: #1a4d7a;
+            --secondary-color: #2a6ba8;
+            --accent-color: #ff6b35;
+            --accent-light: #ff8c61;
+            --light-bg: #f8f9fc;
+            --card-bg: #ffffff;
+            --text-color: #2c3e50;
+            --text-light: #6c757d;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.12);
+            --border-radius: 16px;
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Heebo', sans-serif;
+            background: linear-gradient(135deg, #f8f9fc 0%, #e9ecef 100%);
+            color: var(--text-color);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        /* תפריט ניווט מודרני */
+        nav {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        nav a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(-100%);
+            transition: var(--transition);
+        }
+
+        nav a:hover::before {
+            transform: translateX(0);
+        }
+
+        nav a:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* מיכל ראשי */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+        }
+
+        /* הסתרת דפים */
+        .page {
+            display: none;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* כותרות */
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            right: 50%;
+            transform: translateX(50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent-color), var(--accent-light));
+            border-radius: 2px;
+        }
+
+        /* דף הבית - Hero */
+        .hero {
+            background: var(--card-bg);
+            padding: 5rem 3rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(26, 77, 122, 0.05) 0%, transparent 70%);
+            animation: pulse 15s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .hero > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h2 {
+            font-size: 1.8rem;
+            color: var(--text-light);
+            font-weight: 400;
+            margin-top: 1rem;
+            line-height: 1.6;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-light) 100%);
+            color: white;
+            padding: 18px 45px;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-top: 2.5rem;
+            transition: var(--transition);
+            box-shadow: 0 8px 25px rgba(255, 107, 53, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: var(--transition);
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 12px 35px rgba(255, 107, 53, 0.4);
+        }
+
+        /* כרטיסים מודרניים */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 2.5rem;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            cursor: pointer;
+            position: relative;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(26, 77, 122, 0.05), rgba(255, 107, 53, 0.05));
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 1;
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .card img {
+            width: 100%;
+            height: 240px;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .card:hover img {
+            transform: scale(1.08);
+        }
+
+        .card-content {
+            padding: 1.8rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .card h3 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.8rem;
+        }
+
+        .card p {
+            color: var(--text-light);
+            font-size: 1.05rem;
+            line-height: 1.6;
+        }
+
+        /* לוח הודעות */
+        .message-board {
+            text-align: right;
+        }
+
+        .message-item {
+            background: var(--card-bg);
+            border-right: 6px solid var(--accent-color);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .message-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 6px;
+            height: 100%;
+            background: linear-gradient(180deg, var(--accent-color), var(--accent-light));
+        }
+
+        .message-item:hover {
+            transform: translateX(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .date-badge {
+            font-size: 0.95rem;
+            color: var(--accent-color);
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            display: inline-block;
+            padding: 0.3rem 1rem;
+            background: rgba(255, 107, 53, 0.1);
+            border-radius: 20px;
+        }
+
+        .message-content {
+            font-size: 1.15rem;
+            color: var(--text-color);
+            line-height: 1.8;
+        }
+
+        /* טוען נתונים */
+        .loader {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+            margin-top: 3rem;
+            text-align: center;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+        }
+
+        .loader::after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--primary-color);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* התאמה למובייל */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+
+            .hero {
+                padding: 3rem 2rem;
+            }
+
+            .hero h2 {
+                font-size: 1.4rem;
+            }
+
+            nav {
+                padding: 1rem;
+            }
+
+            nav ul {
+                gap: 0.8rem;
+            }
+
+            nav a {
+                font-size: 0.95rem;
+                padding: 0.5rem 1rem;
+            }
+
+            .container {
+                padding: 2rem 1rem;
+            }
+
+            .grid-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .cta-button {
+                font-size: 1.1rem;
+                padding: 15px 35px;
+            }
+        }
+
+        /* אנימציה נוספת לכרטיסים */
+        .card {
+            animation: cardFadeIn 0.6s ease-out backwards;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+        .card:nth-child(4) { animation-delay: 0.4s; }
+        .card:nth-child(5) { animation-delay: 0.5s; }
+        .card:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes cardFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* הודעות ריקות */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-light);
+            font-size: 1.2rem;
+        }
+
+        .empty-state::before {
+            content: '📝';
+            display: block;
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav>
+        <ul>
+            <li><a onclick="showPage('home')">🏠 דף הבית</a></li>
+            <li><a onclick="showPage('messages')">📢 לוח הודעות</a></li>
+            <li><a onclick="showPage('teachers')">👨‍🏫 הכר את המורה</a></li>
+            <li><a onclick="showPage('events')">🎉 מה היה לנו</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        
+        <div id="home" class="page active">
+            <div class="hero">
+                <h1>ישיבת פרחי אהרון</h1>
+                <h2>רוצים להיות בני תורה? רוצים ללמוד לעומק?<br>מקומכם איתנו!</h2>
+                <a href="https://68fdda4e0b7f0.site123.me/" target="_blank" class="cta-button">
+                    למעבר לאתר הראשי ←
+                </a>
+            </div>
+        </div>
+
+        <div id="messages" class="page">
+            <h2>לוח הודעות</h2>
+            <p style="text-align: center; color: var(--text-light); font-size: 1.15rem; margin-bottom: 2rem;">
+                הודעות מעודכנות ישירות מהמשרד
+            </p>
+            <div id="messages-container" class="message-board">
+                <div class="loader">טוען הודעות</div>
+            </div>
+        </div>
+
+        <div id="teachers" class="page">
+            <h2>צוות הישיבה</h2>
+            <p style="text-align: center; color: var(--text-light); font-size: 1.15rem; margin-bottom: 2rem;">
+                היכרות עם המורים והמדריכים שלנו
+            </p>
+            <div id="teachers-container" class="grid-container">
+                <div class="loader">טוען נתונים</div>
+            </div>
+        </div>
+
+        <div id="events" class="page">
+            <h2>מה היה לנו עד כה</h2>
+            <p style="text-align: center; color: var(--text-light); font-size: 1.15rem; margin-bottom: 2rem;">
+                תיעוד האירועים והפעילויות שלנו
+            </p>
+            <div id="events-container" class="grid-container">
+                <div class="loader">טוען אירועים</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- הגדרות ---
+        const SHEET_URLS = {
+            messages: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSEjrsRHThg6M5_OTpHNT_psQmDB-EFEOWTXjxx78fUsEQDdRQhUx_iEkTs_Vs5wUQNK9Bzb4GszJkX/pub?gid=0&single=true&output=csv',
+            teachers: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSEjrsRHThg6M5_OTpHNT_psQmDB-EFEOWTXjxx78fUsEQDdRQhUx_iEkTs_Vs5wUQNK9Bzb4GszJkX/pub?gid=984969875&single=true&output=csv',
+            events:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vSEjrsRHThg6M5_OTpHNT_psQmDB-EFEOWTXjxx78fUsEQDdRQhUx_iEkTs_Vs5wUQNK9Bzb4GszJkX/pub?gid=1645657212&single=true&output=csv'
+        };
+
+        // --- פונקציות ניווט ---
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            
+            if(pageId !== 'home') {
+                loadData(pageId);
+            }
+        }
+
+        // --- לוגיקת טעינת נתונים ---
+        function loadData(type) {
+            const url = SHEET_URLS[type];
+            const container = document.getElementById(type + '-container');
+
+            if (url.includes('הדבק_כאן')) {
+                container.innerHTML = '<div class="empty-state">נא להגדיר קישורי Google Sheets בקוד</div>';
+                return;
+            }
+
+            Papa.parse(url, {
+                download: true,
+                header: true,
+                complete: function(results) {
+                    renderData(type, results.data);
+                },
+                error: function(err) {
+                    container.innerHTML = '<div class="empty-state">שגיאה בטעינת הנתונים. ודא שהקובץ מפורסם.</div>';
+                }
+            });
+        }
+
+        function renderData(type, data) {
+            const container = document.getElementById(type + '-container');
+            let html = '';
+
+            data = data.filter(row => Object.values(row).some(val => val && val.trim() !== ''));
+
+            if (data.length === 0) {
+                container.innerHTML = '<div class="empty-state">אין נתונים להצגה כרגע</div>';
+                return;
+            }
+
+            if (type === 'messages') {
+                data.reverse();
+                data.forEach(row => {
+                    html += `
+                        <div class="message-item">
+                            <span class="date-badge">${row.Date || ''}</span>
+                            <div class="message-content">${row.Content || ''}</div>
+                        </div>
+                    `;
+                });
+            } 
+            else if (type === 'teachers') {
+                data.forEach(row => {
+                    const img = row.ImageURL && row.ImageURL.trim() !== '' ? row.ImageURL : 'https://via.placeholder.com/400x240/1a4d7a/ffffff?text=אין+תמונה';
+                    html += `
+                        <div class="card">
+                            <img src="${img}" alt="${row.Name || 'מורה'}" loading="lazy">
+                            <div class="card-content">
+                                <h3>${row.Name || ''}</h3>
+                                <p>${row.Info || ''}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+            } 
+            else if (type === 'events') {
+                data.reverse();
+                data.forEach(row => {
+                    const img = row.ImageURL && row.ImageURL.trim() !== '' ? row.ImageURL : 'https://via.placeholder.com/400x240/ff6b35/ffffff?text=אין+תמונה';
+                    html += `
+                        <div class="card">
+                            <img src="${img}" alt="${row.EventName || 'אירוע'}" loading="lazy">
+                            <div class="card-content">
+                                <h3>${row.EventName || ''}</h3>
+                                <span class="date-badge">${row.Date || ''}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            container.innerHTML = html;
+        }
+
+        // טעינה אוטומטית של דף הבית
+        window.addEventListener('DOMContentLoaded', () => {
+            showPage('home');
+        });
+    </script>
+</body>
+</html>
