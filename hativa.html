@@ -659,10 +659,12 @@
 
     <script>
         // --- הגדרות ---
-        const SHEET_URLS = {
-            messages: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSEjrsRHThg6M5_OTpHNT_psQmDB-EFEOWTXjxx78fUsEQDdRQhUx_iEkTs_Vs5wUQNK9Bzb4GszJkX/pub?gid=0&single=true&output=csv',
-            teachers: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSEjrsRHThg6M5_OTpHNT_psQmDB-EFEOWTXjxx78fUsEQDdRQhUx_iEkTs_Vs5wUQNK9Bzb4GszJkX/pub?gid=984969875&single=true&output=csv',
-            events:   'https://docs.google.com/spreadsheets/d/e/2PACX-1vSEjrsRHThg6M5_OTpHNT_psQmDB-EFEOWTXjxx78fUsEQDdRQhUx_iEkTs_Vs5wUQNK9Bzb4GszJkX/pub?gid=1645657212&single=true&output=csv'
+        // שימוש ב-JSON במקום CSV לפתרון בעיות CORS
+        const SHEET_IDS = {
+            spreadsheetId: '2PACX-1vSEjrsRHThg6M5_OTpHNT_psQmDB-EFEOWTXjxx78fUsEQDdRQhUx_iEkTs_Vs5wUQNK9Bzb4GszJkX',
+            messages: '0',
+            teachers: '984969875',
+            events: '1645657212'
         };
 
         // --- פונקציות ניווט ---
@@ -676,29 +678,37 @@
         }
 
         // --- לוגיקת טעינת נתונים ---
-        function loadData(type) {
-            const url = SHEET_URLS[type];
+        async function loadData(type) {
             const container = document.getElementById(type + '-container');
-
-            if (url.includes('הדבק_כאן')) {
-                container.innerHTML = '<div class="empty-state">נא להגדיר קישורי Google Sheets בקוד</div>';
+            const gid = SHEET_IDS[type];
+            
+            if (!gid) {
+                container.innerHTML = '<div class="empty-state">שגיאה בהגדרות</div>';
                 return;
             }
 
-            // שימוש ב-CORS proxy כדי לעקוף את בעיית ה-CORS
-            const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
-
-            Papa.parse(proxyUrl, {
-                download: true,
-                header: true,
-                complete: function(results) {
-                    renderData(type, results.data);
-                },
-                error: function(err) {
-                    console.error('Error loading data:', err);
-                    container.innerHTML = '<div class="empty-state">שגיאה בטעינת הנתונים. נסה לרענן את הדף.</div>';
-                }
-            });
+            // שימוש ב-Google Sheets כ-JSON דרך JSONP
+            const url = `https://docs.google.com/spreadsheets/d/e/${SHEET_IDS.spreadsheetId}/pub?gid=${gid}&single=true&output=csv`;
+            
+            try {
+                const response = await fetch(url);
+                const csvText = await response.text();
+                
+                Papa.parse(csvText, {
+                    header: true,
+                    skipEmptyLines: true,
+                    complete: function(results) {
+                        renderData(type, results.data);
+                    },
+                    error: function(err) {
+                        console.error('Parse error:', err);
+                        container.innerHTML = '<div class="empty-state">שיבוש בפענוח הנתונים</div>';
+                    }
+                });
+            } catch (error) {
+                console.error('Fetch error:', error);
+                container.innerHTML = `<div class="empty-state">שגיאה בטעינת הנתונים<br><small>ודא שה-Google Sheet מפורסם לאינטרנט</small></div>`;
+            }
         }
 
         function renderData(type, data) {
