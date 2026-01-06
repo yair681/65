@@ -796,6 +796,18 @@
                     <h3>📋 אודות</h3>
                     <p id="modalTeacherInfo"></p>
                 </div>
+                <div class="modal-section" id="modalBiographySection" style="display: none;">
+                    <h3>📖 ביוגרפיה</h3>
+                    <p id="modalTeacherBiography"></p>
+                </div>
+                <div class="modal-section" id="modalExpertiseSection" style="display: none;">
+                    <h3>🎓 תחומי מומחיות</h3>
+                    <p id="modalTeacherExpertise"></p>
+                </div>
+                <div class="modal-section" id="modalContactSection" style="display: none;">
+                    <h3>📞 יצירת קשר</h3>
+                    <p id="modalTeacherContact"></p>
+                </div>
                 <div class="modal-section" id="modalImagesSection" style="display: none;">
                     <h3>📸 תמונות</h3>
                     <div class="modal-gallery" id="modalGallery"></div>
@@ -923,9 +935,49 @@
             const teacher = window.teachersData[index];
             if (!teacher) return;
 
+            // שם ומידע בסיסי
             document.getElementById('modalTeacherName').textContent = teacher.Name || '';
             document.getElementById('modalTeacherInfo').textContent = teacher.Info || '';
 
+            // ביוגרפיה
+            const bioSection = document.getElementById('modalBiographySection');
+            const bioText = document.getElementById('modalTeacherBiography');
+            if (teacher.Biography && teacher.Biography.trim() !== '') {
+                bioSection.style.display = 'block';
+                bioText.textContent = teacher.Biography;
+            } else {
+                bioSection.style.display = 'none';
+            }
+
+            // תחומי מומחיות
+            const expertiseSection = document.getElementById('modalExpertiseSection');
+            const expertiseText = document.getElementById('modalTeacherExpertise');
+            if (teacher.Expertise && teacher.Expertise.trim() !== '') {
+                expertiseSection.style.display = 'block';
+                expertiseText.textContent = teacher.Expertise;
+            } else {
+                expertiseSection.style.display = 'none';
+            }
+
+            // פרטי יצירת קשר
+            const contactSection = document.getElementById('modalContactSection');
+            const contactText = document.getElementById('modalTeacherContact');
+            let contactInfo = '';
+            if (teacher.Phone && teacher.Phone.trim() !== '') {
+                contactInfo += `טלפון: ${teacher.Phone}`;
+            }
+            if (teacher.Email && teacher.Email.trim() !== '') {
+                if (contactInfo) contactInfo += ' | ';
+                contactInfo += `אימייל: ${teacher.Email}`;
+            }
+            if (contactInfo) {
+                contactSection.style.display = 'block';
+                contactText.textContent = contactInfo;
+            } else {
+                contactSection.style.display = 'none';
+            }
+
+            // תמונות נוספות
             const imagesSection = document.getElementById('modalImagesSection');
             const gallery = document.getElementById('modalGallery');
             gallery.innerHTML = '';
