@@ -571,6 +571,133 @@
             margin-bottom: 1rem;
         }
 
+        /* Modal/Popup */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            max-width: 900px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: var(--transition);
+            z-index: 10;
+        }
+
+        .modal-close:hover {
+            background: var(--accent-light);
+            transform: rotate(90deg);
+        }
+
+        .modal-header {
+            padding: 3rem 2rem 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+        }
+
+        .modal-header h2 {
+            color: white;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-section {
+            margin-bottom: 2rem;
+        }
+
+        .modal-section h3 {
+            font-size: 1.8rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .modal-section p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--text-color);
+        }
+
+        .modal-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .modal-gallery img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-gallery img:hover {
+            transform: scale(1.05);
+        }
+
+        .modal-videos {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
     </style>
 </head>
 <body>
@@ -657,6 +784,30 @@
 
     </div>
 
+    <!-- Modal for teacher details -->
+    <div id="teacherModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">✕</button>
+            <div class="modal-header">
+                <h2 id="modalTeacherName"></h2>
+            </div>
+            <div class="modal-body">
+                <div class="modal-section" id="modalInfoSection">
+                    <h3>📋 אודות</h3>
+                    <p id="modalTeacherInfo"></p>
+                </div>
+                <div class="modal-section" id="modalImagesSection" style="display: none;">
+                    <h3>📸 תמונות</h3>
+                    <div class="modal-gallery" id="modalGallery"></div>
+                </div>
+                <div class="modal-section" id="modalVideosSection" style="display: none;">
+                    <h3>🎥 סרטונים</h3>
+                    <div class="modal-videos" id="modalVideos"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // --- הגדרות ---
         // שימוש ב-JSON במקום CSV לפתרון בעיות CORS
@@ -734,10 +885,10 @@
                 });
             } 
             else if (type === 'teachers') {
-                data.forEach(row => {
+                data.forEach((row, index) => {
                     const img = row.ImageURL && row.ImageURL.trim() !== '' ? row.ImageURL : 'https://via.placeholder.com/400x240/1a4d7a/ffffff?text=אין+תמונה';
                     html += `
-                        <div class="card">
+                        <div class="card" onclick="openTeacherModal(${index})">
                             <img src="${img}" alt="${row.Name || 'מורה'}" loading="lazy">
                             <div class="card-content">
                                 <h3>${row.Name || ''}</h3>
@@ -746,6 +897,7 @@
                         </div>
                     `;
                 });
+                window.teachersData = data;
             } 
             else if (type === 'events') {
                 data.reverse();
@@ -765,6 +917,83 @@
 
             container.innerHTML = html;
         }
+
+        // פונקציות Modal
+        function openTeacherModal(index) {
+            const teacher = window.teachersData[index];
+            if (!teacher) return;
+
+            document.getElementById('modalTeacherName').textContent = teacher.Name || '';
+            document.getElementById('modalTeacherInfo').textContent = teacher.Info || '';
+
+            const imagesSection = document.getElementById('modalImagesSection');
+            const gallery = document.getElementById('modalGallery');
+            gallery.innerHTML = '';
+            
+            if (teacher.AdditionalImages && teacher.AdditionalImages.trim() !== '') {
+                const images = teacher.AdditionalImages.split(',').map(url => url.trim()).filter(url => url);
+                if (images.length > 0) {
+                    imagesSection.style.display = 'block';
+                    images.forEach(imgUrl => {
+                        gallery.innerHTML += `<img src="${imgUrl}" alt="תמונה" onclick="window.open('${imgUrl}', '_blank')">`;
+                    });
+                } else {
+                    imagesSection.style.display = 'none';
+                }
+            } else {
+                imagesSection.style.display = 'none';
+            }
+
+            const videosSection = document.getElementById('modalVideosSection');
+            const videosContainer = document.getElementById('modalVideos');
+            videosContainer.innerHTML = '';
+            
+            if (teacher.Videos && teacher.Videos.trim() !== '') {
+                const videos = teacher.Videos.split(',').map(url => url.trim()).filter(url => url);
+                if (videos.length > 0) {
+                    videosSection.style.display = 'block';
+                    videos.forEach(videoUrl => {
+                        let embedUrl = videoUrl;
+                        if (videoUrl.includes('youtube.com/watch?v=')) {
+                            const videoId = videoUrl.split('v=')[1].split('&')[0];
+                            embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                        } else if (videoUrl.includes('youtu.be/')) {
+                            const videoId = videoUrl.split('youtu.be/')[1].split('?')[0];
+                            embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                        }
+                        videosContainer.innerHTML += `
+                            <div class="video-container">
+                                <iframe src="${embedUrl}" allowfullscreen></iframe>
+                            </div>
+                        `;
+                    });
+                } else {
+                    videosSection.style.display = 'none';
+                }
+            } else {
+                videosSection.style.display = 'none';
+            }
+
+            document.getElementById('teacherModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('teacherModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        document.getElementById('teacherModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
 
         // טעינה אוטומטית של דף הבית
         window.addEventListener('DOMContentLoaded', () => {
